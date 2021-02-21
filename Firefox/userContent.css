@@ -1,0 +1,96 @@
+/*================ GLOBAL COLORS ================*/
+:root {
+	--night_color1: #2E3440;
+	--night_color2: #3B4252;
+	--night_color3: #434C5E;
+	--night_color4: #4C566A;
+	
+	--snow_color1: #D8DEE9;
+	--snow_color2: #E5E9F0;
+	--snow_color3: #ECEFF4;
+	
+	--frost_color1: #8FBCBB;
+	--frost_color2: #88C0D0;
+	--frost_color3: #81A1C1;
+	--frost_color4: #5E81AC;
+	
+	--aurora_color1: #BF616A;
+	--aurora_color2: #D08770;
+	--aurora_color3: #EBCB8B;
+	--aurora_color4: #A3BE8C;
+	--aurora_color5: #B48EAD;
+}
+
+@media (prefers-color-scheme: dark) {
+:root {
+	--page_bg_color: var(--night_color1);
+	--search_bg_color: var(--night_color2);
+	--search_border_color: var(--night_color3);
+	--search_border_active_color: var(--night_color4);
+	--search_txt_color: var(--frost_color3);
+}
+}
+
+@media (prefers-color-scheme: light) {
+:root {
+	--page_bg_color: var(--snow_color1);
+	--search_bg_color: var(--snow_color2);
+	--search_border_color: var(--snow_color3);
+	--search_border_active_color: var(--snow_color3);
+	--search_txt_color: var(--night_color4);
+}
+}
+
+/*================== NEW TAB BG COLOR ==================*/
+@-moz-document url("about:newtab"), url("about:home"), url("about:blank") {
+ body.activity-stream { background-color: var(--page_bg_color) !important;}
+}
+
+/*================== SEARCH BAR ==================*/
+.search-wrapper input {
+	transition: all 0.3s ease !important;
+    background: var(--search_bg_color) var(--newtab-search-icon) 12px center no-repeat !important;
+	background-size: 20px !important;
+	border: 1px solid !important;
+	border-color: var(--search_border_color) !important;
+	box-shadow: none !important;
+	color: var(--search_txt_color) !important;
+}
+.search-wrapper .search-inner-wrapper:hover input,
+.search-wrapper .search-inner-wrapper:active input,
+.search-wrapper input:focus {
+	border-color: var(--search_border_active_color) !important;
+}
+
+.search-wrapper .search-button,
+.search-wrapper .search-button {
+	transition: all 0.3s ease !important;
+	fill: var(--search_txt_color) !important;
+}
+.search-wrapper .search-button:focus,
+.search-wrapper .search-button:hover {
+    background-color: var(--search_border_active_color) !important;
+}
+
+/*================== SEARCH BAR RESULTS ==================*/
+.contentSearchSuggestionTable .contentSearchSuggestionsContainer,
+.contentSearchSuggestionTable .contentSearchHeader {
+    background-color: var(--search_bg_color) !important;
+	color: var(--search_txt_color) !important;
+}
+.contentSearchSuggestionTable .contentSearchSuggestionRow.selected,
+.contentSearchSuggestionTable .contentSearchOneOffItem.selected {
+	background-color: var(--search_border_color) !important;
+}
+
+.contentSearchSuggestionTable .contentSearchHeader,
+.contentSearchSuggestionTable .contentSearchSettingsButton,
+.contentSearchSuggestionTable .contentSearchOneOffsTable {
+	border-color: var(--search_border_color) !important;
+}
+
+.contentSearchSuggestionTable {
+	box-shadow: none !important;
+	border: 1px solid var(--search_border_color) !important;
+	border-radius: 3px !important;
+}
