@@ -15,6 +15,7 @@ Also thanks to niivu for doing the majority of the work with the Nord Windows th
 - Fonts: FiraCode [Nerd Font](https://github.com/ryanoasis/nerd-fonts) for general text and [Font Awesome 5 Free](https://fontawesome.com/) for icons
 - Player: Potplayer with a slightly modified theme
 - Widgets: [Rainmeter](https://www.rainmeter.net/) modelled on Eww
+- Top Bar: [Polybar for Rainmeter](https://github.com/khanhas/Polybar) tweaked with Nerd Fonts
 - Colorscheme: [Nord](https://www.nordtheme.com/) with extra dark color #242831
 
 <img src="https://raw.githubusercontent.com/Blu3Jive001/Nordic-Genome/master/Previews/No.1.png" alt="img" align="center" width="900px">
