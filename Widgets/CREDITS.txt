@@ -1,0 +1,5 @@
+Eldog-02 for his original widgets: eldogrm.github.io/skins/cakeos…
+Niivu for carrying the torch and creating great Windows themes, but best of all keeping them free
+Barbrossa for the original Elkowar's Wacky Widgets configuration that inspired this port to Windows
+
+And to you, for downloading this
