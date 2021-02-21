@@ -5,6 +5,7 @@ NOTE: These dots are intended for my setup. If you wish to use them (and feel fr
 for your own machine. I'll do my best to answer questions related to parameters that may need to be changed
 
 Thanks to [Barbarossa93](https://github.com/Barbarossa93) and his [Genome](https://github.com/Barbarossa93/Genome) setup
+
 Also thanks to niivu for doing the majority of the work with the Nord Windows theme
 
 ## Info
