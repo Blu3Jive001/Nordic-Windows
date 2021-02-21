@@ -1,0 +1,225 @@
+v1.3.6
+- ADD: Sample "LoadImageAsync.txt".
+- FIX: Better handling for mainmenu commands in fb.RunMainMenuCommand().
+- CHG: Edge style can be used with pseudo transparent now.
+- CHG: Improved pseudo transparent handling while in a tab splitter.
+
+v1.3.5
+- FIX: UpdateFileInfoSimple() treat all tags as multivalue fileds.
+- ADD: IGdiGraphics.CalcTextHeight() and IGdiGraphics.EstimateLineWrap() methods.
+
+v1.3.4
+- ADD: New parameter "focus" to IGdiGraphics.FillGradRect().
+- ADD: GetDelayTime() and SetDelayTime() methods to IFbTooltip interface.
+- FIX: UpdateFileInfoSimple() won't work when supply multivalue fields.
+
+v1.3.3
+- ADD: Read only window.IsTransparent property.
+- CHG: Add new parameter "no_load" to utils.GetAlbumArtAsync().
+- FIX: Stub images won't be loaded since WSH Panel Mod 1.3.2.
+- FIX: fb.RemovePlaylist(idx) doesn't work when idx == 0.
+
+v1.3.2
+- ADD: on_key_up() callback.
+- ADD: on_char() callback.
+- ADD: on_selection_changed() callback.
+- ADD: fb.GetSelection() and fb.GetSelectionType() methods.
+- ADD: IFbMetadbHandle.Compare() method.
+- ADD: window.DlgCode property.
+- ADD: on_playlists_changed() callback.
+- ADD: IGdiGraphics.FillPolygon() and IGdiGraphics.DrawPolygon() methods.
+- ADD: Properties fb.PlaylistCount, fb.ActivePlaylist and fb.PlayingPlaylist.
+- ADD: Methods fb.GetPlaylistName(), fb.CreatePlaylist(), fb.RemovePlaylist(), fb.MovePlaylist() and fb.RenamePlaylist().
+- ADD: Sample "Themed Seek Bar.txt".
+- ADD: gdi.LoadImageAsync() method (#Interfaces.txt).
+- ADD: on_load_image_done() callback (#Callbacks.txt).
+- CHG: New modes for utils.FileTest()
+- CHG: window.NotifyOthers() is changed back to synchronous (since 1.2.1).
+- CHG: Add few optional parameters to ThemeManager.DrawThemeBackground().
+- FIX: Workaround for FillGradRect() which may draw a black line.
+- FIX: Script won't be updated in DUI after importing theme.
+- FIX: Rare crash caused by timers.
+
+v1.3.1
+- ADD: window.CreateThemeManager() method (and also the IThemeManager interface).
+- ADD: SimpleThemedButton.txt sample.
+- FIX: When Layout editing mode is enabled, the context menu may not display the layout editing commands.
+
+v1.3.0
+- CHG: Compiled against new SDK for foobar2000 1.0+, drop support for older versions.
+- CHG: Test versions will be expired after 14 days (no other restrictions, just a popup dialog to prompt user to update).
+- CHG: Version number 1.2.2 => 1.3.0.
+- CHG: "safe mode" is enabled by default now (inflict *ALL* scripts using ActiveX Objects).
+- ADD: Works in Default UI now.
+- ADD: Png mode for IStyleTextRender (#gdi.CreateStyleTextRender(pngmode = false)) and IStyleTextRender.SetPngImage(), useful to create animation.
+- ADD: utils.GetAlbumArtV2() method (Support foobar2000 1.0 search patterns).
+- ADD: window.InstanceType property (#Interfaces.txt).
+- ADD: Callback on_colors_changed() and on_font_changed() (#Callbacks.txt).
+- ADD: Callback on_playlist_switch() (#Callbacks.txt).
+- ADD: window.GetFontCUI(), window.GetColorCUI(), window.GetFontDUI() and window.GetColorDUI() methods (#Interfaces.txt).
+- ADD: utils.Glob() method (#Interfaces.txt).
+- ADD: utils.FileTest() method (#Interfaces.txt).
+- ADD: on_script_unload() callback.
+- CHG: window.NotifyOthers(name, info), now info can be any type (boolean, string, integer...) (#Interfaces.txt).
+- CHG: Add a optional parameter 'force' to fb.GetFocusItem() (#Interfaces.txt).
+- CHG: Return value of IGdiGraphics.GdiDrawText() is changed (#Interfaces.txt).
+- CHG: on_get_album_art_done() (#Callbacks.txt).
+- CHG: IMenuObj.CheckMenuItem(item_id, check), now parameter 'check' accept boolean value (#Interfaces.txt).
+- CHG: More detailed crash info now is attached to the console.
+- CHG: Move preference branch back to "Tools".
+- CHG: Replace the old default script.
+- ADD: More samples (GetAlbumArtV2.txt, MainMenuManager All-In-One.txt and Scroll with GdiDrawText.txt).
+- FIX: Workaround for foo_menu_addons.
+- FIX: Some tiny memory leaks (in script error and GetAlbumArtAsync()).
+- FIX: fb.ShowPopupMessage() now works even during foobar2000 startup.
+- FIX: Other tiny fixes.
+
+v1.2.1
+- ADD: IMainMenuManager interface, use fb.CreateMainMenuManager() to create an instance (#Interfaces.txt).
+- ADD: IStyleTextRender interface, use gdi.CreateStyleTextRender() to create an instance (#Interfaces.txt).
+- ADD: GdiDrawText() now handles DT_CALCRECT flag, eg: g.GdiDrawText(..., DT_VCENTER | DT_CENTER | DT_WORDBREAK | DT_CALCRECT).
+- ADD: utils.GetSysColor() and utils.GetSystemMetrics() methods.
+- ADD: "MainMenuManager" and "Glow Text" sample.
+- CHG: Global callbacks are invoked asynchronously now.
+- CHG: window.NotifyOthers() is now asynchronous (inflict some configs which rely on this).
+- CHG: IMainMenuManager.ExecuteByID() now returns true if command was executed successfully.
+- CHG: Notes & Hints.txt, tag "[OBSOLETE]".
+- CHG: Help button in WSH Panel Mod Preference page is accessible now.
+- DEL: Callbacks.txt, remove restriction information about global callbacks.
+
+v1.2.0
+- ADD: Preprocessor directive "@import", See Preprocessors.txt for more details.
+- ADD: window.MaxWidth, window.MaxHeight, window.MinWidth and window.MinHeight properties.
+- ADD: Preprocessor sample.
+- ADD: utils.ReadTextFile().
+- ADD: Basic prevent executing playback control methods in global callbacks.
+- FIX: Misc bugs and crashes fixed.
+
+v1.1.11
+- ADD: window.SetCursor() method.
+- CHG: Improvements for ApplyMask.
+- CHG: Enhanced editor (autocompletion and calltips).
+- FIX: Stack overflow in property editor.
+- FIX: Fix crashes while trying to import invalid properties setting.
+- FIX: Fix crashes due to GDI+ bug.
+
+v1.1.10
+- ADD: GdiAlphaBlend() method to IGdiGraphics interface, see Interfaces.txt for more details.
+- ADD: Dispose() method to various classes, so now avoid using CollectGarbage(), see Interfaces.txt for more details.
+- ADD: Resize() method to IGdiBitmap interface.
+- ADD: ApplyMask() method to IGdiBitmap interface.
+- ADD: utils.GetAlbumArtAsync() method and on_get_album_art_done() callback for getting album art asynchronously.
+- ADD: window.ID() property, for now only used in utils.GetAlbumArtAsync().
+- ADD: window.GetBackgroundImage() and on_refresh_background_done() callback to retrieve pseudo transparent bakground image.
+- ADD: MetaRemoveField(), MetaAdd() and MetaInsertValue() methods for IFbFileInfo interface.
+- ADD: on_item_played() callback.
+- ADD: Edge style.
+- CHG: UpdateFileInfoSimple() method of IFbMetadbHandle interface now supports multivalue field, see Interfaces.txt for more details.
+- CHG: Set timeout to 0 now means disabling script hangs check.
+- CHG: Updated Samples.
+- FIX: Misc bugs and crashes fixed.
+
+v1.1.9
+- ADD: Re-added ability to check script hangs with customizable timeout.
+- ADD: Add "safe mode" in order to prevent scripts using unsafe COM/ActiveX Objects.
+- FIX: Possible crashes while editing scripts and other cleanups.
+
+v1.1.8
+- ADD: utils.PathWildcardMatch(pattern, str).
+- ADD: IContextMenuManager.InitContext(metadb) method.
+- ADD: New Callbacks: on_mouse_lbtn_dblclk, - ADD: New Callbacks: on_mouse_mbtn_down, on_mouse_mbtn_up, on_mouse_mbtn_dblclk, on_mouse_lbtn_dblclk and on_mouse_rbtn_dblclk.
+- DEL: No check for script hangs any more.
+- CHG: Change implementation of pseudo transparent background.
+- CHG: Methods related to gdi+ objects creation won't throw errors anymore, only return NULL if failed.
+- FIX: UpdateFileInfo() and UpdateFileInfoSimple() now throw an error if it's not executed in main thread.
+- FIX: IMenuObject.ID property was broken.
+- FIX: Crash when invalid index passed into InfoName()/InfoValue()/MetaName()/MetaValue().
+- FIX: Rare crashes and minor cleanups.
+
+v1.1.7
+- ADD: Check for script hangs.
+- ADD: window.GetProperty() and window.SetProperty().
+- ADD: window.ShowConfigure() and window.ShowProperties();
+- ADD: fb.IsMetadbInMediaLibrary() method.
+- ADD: utils.IsKeyPressed() method.
+- ADD: utils.GetAlbumArtEmbedded() method.
+- CHG: utils.GetAlbumArt() now support artist image (See flags.txt).
+- CHG: Gain default config value on panel creation, for panel stack splitter and dockable panels.
+- FIX: Crash while passing a invalid value to IFbFileInfo.InfoValue() or IFbFileInfo.MetaValue().
+- FIX: A rare crash when closing foobar2000 and other cleanups.
+
+v1.1.6
+- ADD: Add method SetMaxWidth(width) to IFbTooltip interface, note that this should be called at least once to enbale multiline or long string support. 
+- FIX: No length restriction for tooltip text now.
+- FIX: Fix a crash when try to apply script in editor window whose corresponding panel is closed (Thanks Peter).
+
+v1.1.5
+- ADD: Add two new methods: MetaFind(name) and InfoFind(name) to IFbFileInfo interface.
+- ADD: Add DrawEllipse(), FillEllipse(), DrawRoundRect() and FillRoundRect() to IGdiGraphics interface.
+- DEL: Remove broken method Rotate() from IGdiBitmap interface.
+- ADD: window.CreateTooltip().
+- ADD: IFbTooltip interface, check Interfaces.txt for details.
+- CHG: Change behavior of shortcuts in editor.
+
+v1.1.4
+- CHG: fb.trace() now accept variable number of arguments, and all arguments are converted to string automatically, e.g: fb.trace("Numbers:", 1, 2, 3) will output "Numbers 1 2 3".
+- ADD: New "Time" property to "IFbProfiler" interface.
+- ADD: Two new methods: utils.ReadINI() and utils.WriteINI().
+- ADD: In the preferences window of editor properties, add serveral new styles customizable.
+- FIX: Some UI glitches about syntax highlighting after editing styles.
+- FIX: Some fixes to prevent potential crash.
+
+v1.1.3
+- ADD: New methods: window.WatchMetadb(metadb) and window.UnWatchMetadb(), in order to watch metadb changes.
+- ADD: New callback function on_metadb_changed(metadb, fromhook) is added in cooperation with two new methods above.
+- ADD: New sample: "Watch Metadb Change (Base)".
+- CHG: Names of editor properties are changes, and add serveral new styles customizable.
+- ADD: Import / Export support for editor properties.
+- ADD: New "Apply" button in Preferences, WSH Panel Mod, in order to apply editor properties immediately.
+- FIX: Minor UI fixes/improvements to editor window.
+- FIX: Misc fixes/changes in source code.
+
+v1.1.2
+- FIX: A crash while using utils.GetAlbumArt() if there are not album art present.
+- CHG: IFbTitleFormat.Eval() is now IFbTitleFormat.Eval(force = false) (Backward compatible).
+- ADD: fb.RunContextCommandWithMetadb(metadb);
+- ADD: Much improvements about editor window, you now can set style (font, size, fore/bakground color, etc) in foobar2000 Preferences, WSH Panel Mod. Note these setting will take effect after reopening editor window.
+- CHG: Content of popup error message is more friendly.
+
+v1.1.1
+- FIX: fb.ShowConsole() doesn't work due to wrong GUID in fb2k SDK.
+- FIX: fb.RunContextCommand() is broken since v1.1.0.
+- FIX: Memory leak in IGdiBitmap.CreateRawBitmap().
+- ADD: New properties: fb.CursorFollowPlayback and fb.PlaybackFollowCursor.
+- ADD: New "NotifyOthers" property to "window" interface.
+- ADD: New callbacks: on_playlist_stop_after_current_changed(state), on_cursor_follow_playback_changed(state), on_playback_follow_cursor_changed(state) and on_notify_data(name, info).
+- FIX: "on_item_focus_change" is suddenly wrong documented as "on_items_focus_change".
+
+v1.1.0
+- ADD: IFbMetadbHandle, refer to Interface.txt for more information.
+- CHG: (ATTENTION) fb.GetNowPlaying(), fb.GetFocusItem() now return IFbMetadbHandle, instead of IFbFileInfo.
+- CHG: (ATTENTION) on_playback_new_track(metadb) call back now use IFbMetadbHandle as parameter, instead of IFbFileInfo.
+- ADD: Method MetaSet() to IFbFileInfo interface.
+- ADD: Ability to update file info: IFbMetadbHandle.UpdateFileInfo() and IFbMetadbHandle.UpdateFileInfoSimple().
+- ADD: New interface utils: utils.CheckComponent(), utils.CheckFont() and utils.GetAlbumArt().
+- ADD: IFbTitleFormat.EvalWithMetadb().
+- FIX: fb.RunMainMenuCommand() handles menu display string which contains '/' character correctly.
+- DEL: Remove EvalPlaylist() from "fb" interface.
+- CHG: Eval() will execute some base functions/variables even fb2k is not playing or playlist is empty.
+- CHG: Callback "on_items_selection_change" is now "on_items_focus_change".
+- ADD: New samples: "GetAlbumArt" and "SimpleFollowCursor".
+- FIX: Some problems may cause memory leak.
+
+v1.0.4
+- ADD: Two new callbacks: on_mouse_rbtn_down(x, y, mask) and on_mouse_rbtn_up(x, y, mask).
+- ADD: "ShowPopupMessage" method to "fb" interface.
+
+v1.0.3
+- FIX: Crash while using fb.RunMainMenuCommand().
+
+v1.0.2
+- ADD: "StopAfterCurrent" property to "fb" interface.
+- FIX: Minor bug fixes to configuration window.
+
+v1.0.1
+- First public release.

@@ -1,0 +1,1516 @@
+foo_uie_elplaylist.dll v0.6.8.2 beta
+for foobar2000 v1.0+, Columns UI0.3+, Windows Vista+ 
+(動作確認はWindows Vistaのみ)
+
+SDK version
+foobar2000:2009-01-09
+       cui:6.3
+
+Columns UI用 SCPL likeなPlaylist view
+プレイリストの各トラックをgroup formatに設定した要素でグルーピングしてリスト表示します。
+
+設定は変えたいときは、右クリックメニューのSettings...から設定ダイアログを呼び出してください。
+設定を編集するには、Titleformat(TF)の知識が必要です。Titleformatについては別途 他の解説サイトを参照をしてください。
+
+
+
+●設定項目
+
+[ script]
+特にリストの各行の内側の描画のカスタマイズを行います。
+	title format script presets: 描画を制御するTFを記述します。設定は複数登録できます。
+		Track list
+			トラック行の描画を制御するTF。
+		Group header
+			グループヘッダの描画を制御するTF。
+		Per Second
+			再生トラック行で毎秒更新される描画を制御するTF。(Now playing info系のTFが使用できます。)
+		Popup(Background)
+			ポップアップウィンドウの描画を制御するTF。Popup(Track)の前に実行される。
+			ほとんどの拡張フィールドは使えない。
+		Popup(Track)
+			ポップアップウィンドウのトラック単位の描画を制御するTF。グループヘッダのPopupの場合にはグループ内のトラックごとに実行される。
+			ほとんどの拡張フィールドは使えない。
+			ボップアップの起点が、トラック行かグループヘッダかは%el_is_group%で判定してください。
+			また、グループヘッダの場合、%el_item_index%で描画位置をずらしてください。
+				[注意]:	Popupが実装されていないバージョンから実装されているバージョンに更新したあとに、
+				        設定ダイアログを開くとPopupのデフォルトTitleformatがリセットされて何もなくなってしまいますが、仕様です。
+					この状態で、設定を保存すると、Popupには何も表示されなくなります。
+				        Popup機能はGraphical Browserをかなり参考にしています。問題があれば、はずします。
+
+
+[style]
+	custom background colour :
+		カスタム背景色を指定します。
+		total : 全体の背景色を指定します。
+		odd item  : 奇数行背景色を指定します。
+		even item : 偶数行背景色を指定します。
+		selected item :選択行の背景色を指定します。
+		playing item  :再生トラックの背景色を指定します。
+		selected playing item :選択行かつ再生トラックの背景色を指定します。
+
+		oddとeven itemについてはleft paddingとright paddingで描画範囲を指定できます。
+
+		odd and even are calculated by the list index:
+			onのとき、奇数/偶数をリストの行番号で決めます。
+			offのときは、グループ内の順番で決めます。
+
+		※表示する文字に関する変更は、scriptを編集するしかありません。
+
+	default font... :
+		デフォルトのフォントを指定してください。
+
+	pseudo transparent    :
+		擬似的な背景透過を行います。処理が重くなることが多いです。
+		(重い場合、表示領域を狭くするとマシになるかもしれません。
+		 作者が使っていないので最適化する気なし･･･ )
+
+	Enable Visual Style : 
+		各行の背景をVisualStyleなどで自動的に描画します。主にWindows Vista向け。
+		custom background colour の描画後で、title format scriptの評価前に描画されます。
+		テキストの色は、自動で変更されません。
+
+	scrollbar :
+		スクロールバーの表示状態の設定:default(自動で表示/非表示切り替え)/hide(常に非表示)/show(常に表示)、
+		およびスクール量を設定します(0はシステムのデフォルト)。
+
+[ grouping ]
+主にグルーピングに関するカスタマイズと、複数行にわたるリストの表示のカスタマイズが可能です。
+
+	group by:  複数の設定をpresetとして保存できます。
+		group format :
+			各トラックをグルーピングするためのTitleformatを記述します。
+			これをTFとして評価した結果が同じになる一続きのトラックをグループとして扱います。
+			group formatの結果が同じでも、プレイリスト上で離れているトラックは異なるグループとして扱われます。
+			group formatを"|||"で分割することで、階層的にgroupを設定できます。
+
+			例: %album artist%|||%album%
+			子グループを持つグループには、トラックを割り当てられないという制約があります。
+			そのようなグループにトラックを割り当てようとすると、ダミーグループヘッダが挿入されます。
+			このテキストの最後に少し詳しく書いてあります。
+
+		sort format:
+			プレイリスト内のsortを行うためのTitleformatを記述します。
+			sortの実行は、コンテキストメニューから行います。
+			[注意] 自動でsortを実行するわけではありません。
+			       
+
+		row height :
+			リストにおける1行の基本高さを設定します。
+
+
+		row number of group header:
+			"row height"を単位としたグループヘッダの高さを設定します。
+			Titleformatが有効です。TFとして処理された結果が数値(0～16)を返さなければなりません。
+			このためグループヘッダの高さは、必ずrow heightの整数倍(0～16倍)になります。
+			[注意]: グループ先頭トラックを使って、group rowは評価されます。
+
+		minimum row number of group:
+			各グループの行数の下限を設定できます。
+			例えば、グループのトラックの数が少なくてもアルバム画像の表示範囲を確保する用途などに使用できます。
+			Titleformatが有効です。TFとして処理した結果が0以上の数値を返さなければなりません。
+			グルーピングした結果、グループ内のトラックの数がこの設定値に満たない場合、empty行を挿入して水増しします。			
+
+			[注意] グループ先頭トラックを使って、min item numは評価されます。
+			       empty行では、Track list Titleformatで$enabledraw()を使わない限り、描画機能がoffになります。
+			       他の有効行と同様に描画したい場合は、$enabledraw(1)などで、描画機能をonにしてください。
+			       empty行のTrack list Titleformatは、そのグループの最後の有効トラックを使って評価されます。
+
+		playlist filter :
+			enable playlist filterがonの場合、プレイリストが切り替わったときにプレイリストの名前からgroup by presetを自動で選択できるようにします。
+				enable all playlists  すべてのプレイリストでpresetが有効。
+				enable only on        指定のプレイリスト名に一致した場合presetが有効。
+				disable on            指定のプレイリスト名に一致した場合presetが無効。
+				presetリストの順序で優先度が決まります。
+
+				※ 指定するプレイリストの名前は、";"で区切ることで複数指定できます。TFやワイルドカードは無効です。
+
+		associated titleformat script name : 
+			このpresetと関連付けたいtileformat scrpitの名前を1つだけ設定できます。
+
+
+	enable playlist filter :
+		playlist filterを有効にして プレイリスト名からgroup by presetを自動で選択するようにします。
+
+	prioritize active preset :
+		有効なpresetを探すときに、まず今選択されているgroup by presetを最優先にします。
+
+[field definition]
+	title format preprocessor :
+		各 Titleformat[Track list] [Group header] [Per Second] [Popup(Background)] [Popup(Track)] [row number of group header] [minimum row number of group]
+		を評価する前に、fieldの置換を行います。
+		各 Titleformatで共通に参照したいコードを設定するのに便利かもしれません。
+		foo  :  C:\%album%.jpg  と設定した場合、
+		各 Titleformatの  %foo% が C:\%album%.jpg に置換されます。
+
+[ behaviour ]
+	click action :
+		プレイリスト上でクリックしたときの動作を変更できます。
+
+	mouse hover action :
+		マウスをしばらく停止させたときに実行する動作を指定できます。
+
+	enable hover :
+		mouse hover actionをon/offできます。
+
+	delay :
+		マウスを停止させてからmouse hover actionを実行するまでの遅延時間。
+
+	display only the focused group :
+		フォーカスしたグループのみ表示します。他のプレイリスト表示パネル(Graphical Browserとか)との連携が前提です。
+
+	collapse all groups when playlist is changed :
+		デフォルトでグループを閉じます。
+	threshold of number of groups :
+		グループの個数がこの数値以上のときにグループを閉じます。
+	auto-collapse :
+		フォーカスしたグループ以外のグループを閉じます。
+		このオプションがonだと、グループヘッダでsingle clickするだけでトラック行の表示/非表示が切り替わるようになります。
+		またクリックアクションで開いたグループは自動では閉じません。
+		再生トラックに追従させたい場合、Playback/Cursor Follows Playbackと組み合わせて使ってください。
+
+	allow collapsing group with no group header :
+		グループヘッダがない(group rowが0な)グループでも閉じるようにします。
+
+	disable focus change by single click at group header
+		グループヘッダやempty行でシングルクリックしたときに、フォーカスを移動させるのを止めます。
+
+	update every second :
+		再生トラックのPer Secondを有効にする。より正確には、毎秒単位の描画の更新をon/offするだけです。
+
+	move items with drag and dop :
+		選択トラックをDrag & Dropで移動できるようにします。
+		このオプションがoffでも、[Alt] 押しながらの Drag & Dropで移動できます。
+
+	enable incremental search :
+		キー入力に従って、group format(%el_group_format%)をインクリメンタル検索します。
+		検索キーワードは、ステータスバーに出力されます。
+		また、5秒間 有効キーが入力されない場合、検索キーワードは自動でリセットされます。
+		ショートカットキーバインドも参照。
+		XPでIMEならば、日本語でも検索可能なように対応したつもりです。
+		Vistaではアルファベット(ASCII)による検索のみかもしれません。(もともとVistaでは動作未確認です。)
+		VistaでASCII以外を検索したい場合は、Ctrl-fでダイアログベースの検索が可能ですので、そちらを使用してください。
+
+
+	disable to follow the focused item
+		フォーカスが移動した際に、表示範囲内に収まるようにスクロールするのを無効にします。
+
+
+	resize quality :
+		画像の拡大/縮小品質を設定できます。
+		とにかく品質を上げたい場合は、HighQualityBicubicにしておけば良いのではないかと。
+
+	context menu :
+		各コンテキストメユー(右クリックメニュー)の項目を表示するか、しないかを設定できます。
+
+
+[misc]
+	popup
+	ポップアップはmouse hover actionから実行されます。
+		max size :
+			ポップアップの最大サイズ。Titleformatで小さくはできます。
+
+		popup opacity :
+			ポップアップの不透明度。0にすると完全に透明になるので、表示されなくなります。
+
+		fade-in :
+			表示されるときにフェードイン効果をつけます。かなり適当に作ってます。(Vistaだとデフォルトでフェードインする？)
+
+		enable colorkey :
+			カラーキーを設定します。設定した色が透過されます。背景色と同一(デフォルト)なら背景が透過します。
+			ただし、アンチエイリアスがかかると、綺麗に透過しません。
+
+		prevent going outside of display
+			ポップアップがディスプレイの表示範囲外にできるだけ出ないようにします。マルチディスプレイ非対応です。
+		
+		max track num:
+			Popup(Track)を実行するトラック数の上限値。
+			PopupのTitleformat scriptは、
+			Popup(Background) -> Popup(Track) -> Popup(Track) -> ･･･
+			と実行されます。
+
+	additional sort format
+		コンテキストメニューのsort項目に追加するsort formatを設定します。
+		group by presetとは独立しています。
+
+
+●ショートカットキーバインド
+	Ctrl-c : Copy
+	Ctrl-v : Paste
+	Ctrl-x : Cut
+	Ctrl-a : 全選択
+	Ctrl-f : 検索ダイアログ(%el_group_format%の検索ができます)
+	Ctrl-g : 次のグループにジャンプ
+	Ctrl-b : 前のグループにジャンプ
+	Delete : プレイリストからトラックを除去
+	Alt-[Up]/[Down] : 選択トラックの移動  ("hide all items when playlist is changed" が offであること)
+	[注意]: foobar2000本体のGeneral->Keyboard Shortcutsの設定が優先されます。
+
+	##[Alt] + Drag & Drop でも選択トラックの移動できます。
+
+	■インクリメンタルサーチ
+	キー入力でgroup format(%el_group_format%)をインクリメンタル検索できます。(enable incremental searchがonの場合のみ)
+	また、以下のショートカットキーが有効です。
+	Ctrl-e : 検索キーワードをリセットする。
+	Ctrl-d : 次を検索。(Ctrl-sが空いていれば良かったのに･･･)
+	Ctrl-r : 前を検索。
+
+●メインメニュー
+	すべてのパネルに影響があります。
+	Show now playing   :再生トラックが表示されるようにスクロールします。
+	Show focused item  :フォーカストラックが表示されるようにスクロールします。
+	Expand all groups  :すべてのグループを展開します。
+	Collapse all groups:すべてのグループを閉じます。
+	Redraw             :明示的に再描画を発生させます。
+	Refresh            :再グルーピングと、画像のキャッシュをクリアします。
+
+
+●拡張コマンドリファレンス
+(ここに書いてあるもの以外にもfoobar本体のデフォルトTFはだいたい使えます)
+
+
+■■■■■■ fields ■■■■■■
+
+%el_width%
+	行の表示領域の横幅を返す
+	[Track list] [Group header] [Per Second] [Popup]
+
+
+%el_height%
+	行の表示領域の高さを返す。
+	( グループ行は%el_height% = %el_group_row% * %el_row_height%
+	  トラック行は%el_height% = %el_row_height% )
+	$setworldtransform()の影響を受ける。
+	[Track list] [Group header] [Per Second] [Popup]
+
+
+%el_isplaying%
+	再生中か否か 
+	[Track list] [Group header] [Per Second]
+
+
+%el_selected%
+	プレイリスト上で選択中か否か
+	[Track list] [Per Second]
+	click actionのSelect groupで選択されたグループか否か
+	[Group header] 
+
+
+%el_focused%
+	プレイリスト上でフォーカス中か否か
+	[Track list] [Per Second]
+
+
+%el_row_height%
+	行の基本的な高さを返す。
+	(グループヘッダ行では%el_height%と異なる。)
+	[Track list] [Group header] [Per Second]
+
+
+%el_group_row%
+	グループヘッダ行の高さが%el_row_height%何個分か。
+	グループヘッダでは%el_height% = %el_group_row% * %el_row_height% の関係
+	[Track list] [Group header] [Per Second]
+
+
+%el_item_count%
+	グループ内のトラックの個数
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+	[Popup]
+
+
+%el_item_count2%
+	empty行を含むグループ内のトラックの個数
+	    [Track list] [Group header] [Per Second]
+	Popupで処理するトラック数
+	    [Popup]
+
+
+%el_direct_item_count%
+	グループに直接割り当てられてるトラックの個数。
+	特殊な場合を除いて、サブグループを持つグループでは0になる。
+	また、サブグループを持たないグループでは、%el_direct_item_count% = %el_item_count%となる(はず)。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+%el_total_item_count%
+	プレイスリスト内のトラックの総数
+	[Track list] [Group header] [Per Second] [Popup]
+
+%el_item_index%
+	グループ内のトラックのインデックス(0から数えて)
+	empty行ではカウントアップされない。
+	[Track list] [Per Second] [Popup]
+
+
+%el_item_index2%
+	グループ内のトラックのインデックス(0から数えて)
+	empty行でもカウントアップされる。
+	[Track list] [Per Second]
+
+
+%el_total_group_count%
+	グループの個数(すべてのグループヘッダの個数)
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_total_group_index%
+	グループのインデックス(リスト上でのグループヘッダのインデックス)
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_count%
+	同じ親グループに属しているグループの個数
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_index%
+	親グループから見たときのグループのインデックス(0から数えて)
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_depth%
+	現在のグループの深さ(0から数えて)
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+%el_subgroup_count%
+	サブグループの数
+	子グループの数であり、孫グループの数などはカウントされない。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_subgroup_count2%
+	サブグループの累積数
+	孫グループ以降も数にカウントされる。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_group_format%
+	現在のグループでgroup formatをTFで処理した結果を返す。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+%el_group_first_path%
+	現在のグループの最初のトラックのパスを返す。
+	$imageabs向け。
+	[Track list] [Group header] [Per Second] 
+
+
+%el_is_collapsed% (%el_is_hide_item%)
+	グループを閉じているか否か。
+	(グループヘッダのみの表示かどうか)
+	[Group header] [Group row] 
+
+
+%el_is_empty%
+	empty行か否か。
+	(単に%el_is_valid%と逆)
+	    [Track list] [Per Second]
+	サブグループ構造を上手く構成できない場合に、ダミーとして入れられるグループ行か否か。
+	    [Group header] [Group row] [Min item num]
+
+
+%el_is_valid%
+	有効な(empty行ではない)行か否か。
+	[Track list] [Per Second]
+	[Group header] [Group row] [Min item num]
+
+
+%el_is_noheader%
+	グループヘッダがあるかないか
+	(%el_group_row%が0なら1)
+	[Track list] [Per Second]
+
+
+%el_sum_length%
+	グループのトラックの長さ合計 [hh:]mm:ss
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_sum_length_seconds%
+	グループのトラックの長さ合計 (秒)
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_backcolour%
+	背景色をr-g-b形式で返す。
+	r-g-b-a形式したい場合は、
+	%el_backcolour%-192 などでalpha値を追加できる。
+	[Track list] [Group header] [Per Second]
+
+
+%el_preset_index%
+	現在のgroup byのpresetのインデックスを返す。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_preset_name%
+	現在のgroup byのpresetの名前を返す。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_is_group%
+	Popupがグループヘッダか否か。
+	[Popup]
+
+
+%el_popup_width%, %el_popup_height%
+	その時点でのポップアップサイズ。
+	%el_width%、%el_height%はmax sizeを返すので注意。
+	[Popup]
+
+
+%el_is_themed%
+	enable Visual Styleが有効か否か
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+
+
+%el_foobar2000_path%
+	foobar2000の実行ファイルのあるフォルダパスを返す。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num]
+	
+
+%el_user_profile_path%
+	ユーザープロファイルのフォルダパスを返す。
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+%el_system_date%
+	foobar2000が起動した、または、Playlistが切り替わった日付を返す。
+
+	Returns system date on startup/playlist change.
+
+	[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]
+
+
+
+■■■■■■ functions ■■■■■■
+
+●描画制御関数
+	[Track list], [Group header], [Per Second], [Popup]で有効。
+
+$font(name,size,OPTIONS)
+	フォント設定。
+	OPTIONS: bold italic underline strikeout
+
+	例: $font(Tahoma,10,bold italic)
+
+
+$drawstring(text,x,y,W,H,r-g-b-a,OPTIONS [,OPTIONS2])
+	文字列描画関数。
+	textを座標(x,y)に描画する。
+	[注意]文字列はこの関数とdrawtextとdrawtextexでしか表示できない。
+	TrueTypeフォントしか使えないかも。
+
+	OPTIONS : アライン指定、描画品質指定、クリップ指定などをする。
+		left hcenter right       水平アライン指定
+		top  vcenter bottom      垂直アライン指定
+
+		nowrap                   ラップアラウンドしない
+
+ 		noaa                     ClearTypeもアンチエイリアスも無効。
+		aa                       アンチエイリアスをかけるモード。ClearTypeが効かないフォントでもアンチエイリアスがかかる。
+		hq                       最高品質で描画するモード。ClearTypeモード。(default)
+
+		trimchar  trimword       表示範囲に収まらない場合のトリミングする。
+		elipchar  elipword       表示範囲に収まらない場合に最後を･･･に置き換える。
+
+		mempos                   getlastposで、描画した座標を取得できるようにする。   
+
+	OPTIONS2 (実験的オプション, experimental option)
+		glow効果の条件を指定する。
+
+		glow:expand:colour:strength  glowオプション
+			expand - [0-5]
+			colour - r-g-b
+			strength - [0-3]
+
+		offset:x:y
+			x  - glowの水平方向のオフセット
+			y  - glowの垂直方向のオフセット
+
+		※ glow処理は重いです。(特にpseudo transparentのとき)
+
+
+		NOTE: glow effect is quite slow. please use carefully.
+
+
+	例  $drawstring(abcd,10,10,,,255-128-64-128,)
+	    $drawstring(abcd,10,10,,,255-128-64-128,left vcenter,glow:2:255-255-255:3)
+	    $drawstring(wxyz,10,10,,,255-255-255,,glow:2:32-168-268:1 offset:1:1)
+	    $drawstring(wxyz,10,10,,,255-255-255,elipchar)
+
+
+$drawrect(x,y,w,h,R1-G1-B1-A1,R2-G2-B2-A2,OPTIONS)
+	矩形描画関数。
+	座標(x,y)にサイズ(w,h)で矩形を描画する。
+	R1-G1-B1-A1  内部色
+	R2-G2-B2-A2  枠の色
+
+	OPTIONS
+		aa - アンチエリアスをかける
+
+	例  $drawrect(0,50,50,50,255-128-64-128,,aa)
+
+
+$gradientrect(x,y,w,h,r1-g1-b1-a1,r2-g2-b2-a2,OPTIONS,PEAK)
+	矩形内をグラデーションで塗りつぶす描画関数。
+	座標(x,y)にサイズ(w,h)で矩形を描画する。
+	r1-g1-b1-a1  グラデーション開始色
+	r2-g2-b2-a2  グラデーションピーク色
+
+	OPTIONS
+		vertical    垂直方向グラデーション
+		horizontal  水平方向グラデーション
+		aa          アンチエリアスをかける
+		nonlinear   グラデーションの仕方が非線形
+
+	PEAK: 0-100
+		グラデーションのピーク位置をずらす。
+		0はデフォルトで、ピーク色で終了する。
+		50のときは、中心がピーク色となる。
+
+	例: $gradientrect(0,50,50,50,255-128-64-128,255-255-255,vertical aa)
+	    $gradientrect(0,50,50,50,255-128-64-128,255-255-255,,10)
+
+
+$drawblurrect(x,y,w,h,colour,level)
+	輪郭をぼかして矩形を塗りつぶす描画関数。
+	level [1-7]
+
+
+$drawfocusrect(x,y,w,h)
+	指定の矩形にフォーカスを示す枠を点線で描画する関数。
+
+
+$drawthemerect(x,y,w,h,control_name,partId,stateId)
+	Visual Styleを使って矩形内にコントロール(ボタンやプログレスバー)を描画する関数。
+	画像として描画するだけなので実用性は低いかもしれない。
+	Visual Styleで定義されていないコントロールは描画されない。
+	少なくともWindowXP以上必須。
+
+	control_name  : 描画したいコントロールの種類の名前を指定する。以下のいずれか。
+		window button rebar toolbar status listview header progress tab trackbar tooltip treeview spin scrollbar
+		edit combobox taskbar taskband startpanel explorerbar
+
+	partId: 描画したい部品のID。目安としてコントロールごとに以下の範囲の数値が使用出来る可能性が高い。
+	        ほとんどの場合、定義されているものの方が少ないみたい。
+		window: 1-37
+		button rebar listview tooltip: 1-5
+		toolbar: 1-6
+		status treeview taskband: 1-3
+		header spin: 1-4
+		progress: 1-4
+		tab trackbar scrollbar:1-10
+		edit: 1-2
+		combobox: 1
+		taskbar: 1-8
+		startpanel: 1-11
+		explorerbar: 1-12
+
+	stateId: 選択などの状態のID。 状態を持たない部品の場合は0を指定する。
+	         stateIdが0か1か2で描画されないなら、その部品は定義されていない。
+
+	例: 
+        Vistaならば、エクスプローラのスタイルが適用できる。
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,1) //default
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,2) //hot
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,3) //selected
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,4) //disable
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,5) //notfocused selected
+	    $drawthemerect(0,0,%el_width%,%el_height%,listview,1,6) //hot selected
+            $drawthemerect(0,0,%el_width%,1,listview,7,0)           //group header line
+
+$drawroundrect(x,y,w,h,w2,h2,R1-G1-B1-A1,R2-G2-B2-A2,RESERVED)
+	角を丸めた矩形描画関数。
+	座標(x,y)にサイズ(w,h)で角を丸めた矩形を描画する。
+	角の丸みは、w2,h2で調整できる。
+	w > 4*w2 && h > 4*h2 を満たす必要がある。
+	R1-G1-B1-A1  内部色
+	R2-G2-B2-A2  枠の色
+
+    例  $drawroundrect(10,20,50,50,4,4,255-255-128-255,,)
+
+
+$drawellipse(x,y,w,h,R1-G1-B1-A1,R2-G2-B2-A2,RESERVED)
+	楕円描画関数。
+	座標(x,y)にサイズ(w,h)で楕円を描画する。
+	R1-G1-B1-A1  内部色
+	R2-G2-B2-A2  枠の色
+
+
+$drawtriangle(x1,y1,x2,y2,x3,y3,R1-G1-B1-A1,R2-G2-B2-A2,OPTIONS)
+	(x1,y1),(x2,y2),(x3,y3)を頂点とする三角形描画関数。
+	R1-G1-B1-A1  内部色
+	R2-G2-B2-A2  枠の色
+
+	OPTIONS
+		aa - アンチエリアスをかける
+
+	例: $drawtriangle(10,5,20,10,10,15,200-100-100,,aa)
+
+
+$imageabs(x,y,w,h,path,OPTIONS,n,alpha,OPTIONS2)
+	座標(x,y)にサイズ(w,h)で path で指定される画像を表示する。
+	リサイズ後の画像をメモリ上に保持して、次に参照された場合の処理効率をあげる。
+	参照されなった画像は、そのうちメモリ上から削除される。
+	w,hを省略するとオリジナル画像サイズで表示し、キャッシュする。
+	(ただし、w,hを省略してもメモリ上にすでにキャッシュされてる場合は、そのままキャッシュしてある画像サイズになる)
+
+	複数の縮小率を扱いたい場合、
+	縮小した後に拡大されると画質が悪い。
+	nodisplayやnoexpansionなどを利用して、
+	使用する縮小率の中で最も大きい縮小率で最初にメモリのキャッシュするのがよい。
+
+	画像が存在すればtrue、しなければfalseを返す。
+
+	dipsplays the image specified by path.
+	after the image is resized, it is cached on the memory. 
+
+	path: 画像の絶対パス (or 画像が埋め込まれた AudioFile の path)
+
+	OPTIONS
+		■ <appearance>
+		nokeepaspect アスペクト比を維持しない(nodisplay,archive,icon以外のオプションと排他)。
+		nodisplay    メモリに読み込むだけで表示しない。
+		noexpansion  縮小はするが、拡大しない。
+
+		■ <align>	それぞれ排他。
+		left right   水平アライン指定。
+		top bottom   垂直アライン指定。
+
+		■ <misc>
+		wc           wildcard(*,?) を有効にする。read engineに何か指定すると無効になる。
+		delay        別スレッドで画像を読み込みを有効になる。サイズの大きい画像ファイルを読み込む場合は推奨。
+		             新しく画像を読み込もうとする場合、一旦、返り値としてtrueおよび文字列として"delay"が返る。
+		             そして、別スレッドを作成し、画像の読み込みを行う。
+		             画像の読み込みが完了する前に、その画像の読み込みが発生した場合、返り値としてfalseが返る。
+		             画像の読み込みが完了すると、再度TFは評価される。
+		nodelay      別スレッドでの画像を読み込みを無効にする。
+
+
+		■ <read engine>	それぞれ排他。
+		archive      archive reader経由でpathの画像を表示する。
+		             pathの書式はarchive readerに依存するが、書庫の絶対パス|書庫内ファイルパス が基本。
+		             例:  C:\aaa\image.zip|bbb/ccc.jpg
+		icon         pathで指定されるiconファイル(*.ico)を表示する。
+
+		artreader        pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		                 埋め込み画像がなければ、Audioファイルのフォルダ画像を読み込む。ただし低速。		                
+		artreader_front  pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_back   pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_disc   pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		artreader_icon   pathで指定されるAudioファイルの埋め込み画像をfoobar2000のcoreのartwork readerで読み込む。
+		(artreader*** are currently disrecommended options because these option seem to be slow)
+
+
+		* NOTE *
+		if you use artreader and artreader_*** options, you must pass %el_group_first_path% to "path".(since foobar2000 v1.0)
+				
+
+	n   rotateflipのためのインデックス
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反転 
+		5: 90 + 左右反転 
+		6: 上下反転 
+		7: 90 + 上下反転 
+
+	alpha  0-255
+		不透明度
+
+	OPTIONS2 (shadow effect)
+		glow:expand:colour
+		offset:x:y
+
+
+    例  $imageabs(10,10,50,50,C:\%album%.jpg)
+        $imageabs(10,10,50,50,C:\%album%.jpg,left top)
+        $imageabs(10,10,50,50,C:\%album%.jpg,,6)
+        $imageabs(10,10,50,50,C:\%album%.*,wc,6)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom nodelay,,128)
+        $imageabs(10,10,50,50,C:\%album%.jpg,bottom,,,glow:2:0-0-0 offset:4:4)
+        $imageabs(10,10,50,50,%el_group_first_path%,artreader_front)
+
+
+$imageabs_rc(rw,rh,srcx,srcy,srcw,srch,x,y,path,OPTIONS,n,alpha,OPTIONS2)
+	リサイズしてクリップした画像を表示する。
+	path で指定される画像をサイズ(rw,rh)にリサイズ後、
+	その部分領域(srcx,srcy,srcw,srch)を座標(x,y)にサイズ(srcw,srch)で表示する。
+
+	メモリ上に(rw,rh)でキャッシュする。
+	TFを評価したときに(rw,rh)が変化すると、画像を再読み込みする。
+	そのため、rw, rhは固定値で指定すべき。
+
+	画像が存在すればtrue、しなければfalseを返す。
+
+	OPTIONS (imageabs参照)
+		nokeepaspect アスペクト比を維持しない
+		nodisplay    メモリに読み込むだけで表示しない
+		archive
+		icon
+    	(  left      
+      	   hcener 
+       	   right
+       	   top
+       	   vcenter
+           bottom ) 
+	n   rotateflipのためのインデックス
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反転 
+		5: 90 + 左右反転 
+		6: 上下反転 
+		7: 90 + 上下反転 
+
+	alpha  0-255
+        不透明度
+    
+	例:
+	 $imageabs_rc(200,100,0,0,100,50,10,10,C:\%album%.jpg,,6,192)
+	 $imageabs_rc(200,100,0,0,200,100,10,10,C:\%album%.jpg,,)  ( = $imageabs(10,10,200,100,C:\%album%.jpg,left top,,) )
+	 $imageabs_rc(150,120,0,0,150,120,20,15,C:\%album%.jpg,hcenter vcenter,)  ( = $imageabs(20,15,150,120,C:\%album%.jpg,,,) )
+
+
+$albumart(x,y,w,h,target,OPTIONS,n,alpha,OPTIONS2)
+	foobar2000 core api 専用 画像表示関数
+	座標(x,y)にサイズ(w,h)で path で指定される画像を表示する。
+	リサイズ後の画像をメモリ上に保持して、次に参照された場合の処理効率をあげる。
+	参照されなった画像は、そのうちメモリ上から削除される。
+	w,hを省略するとオリジナル画像サイズで表示し、キャッシュする。
+	(ただし、w,hを省略してもメモリ上にすでにキャッシュされてる場合は、そのままキャッシュしてある画像サイズになる)
+
+	複数の縮小率を扱いたい場合、
+	縮小した後に拡大されると画質が悪い。
+	nodisplayやnoexpansionなどを利用して、
+	使用する縮小率の中で最も大きい縮小率で最初にメモリのキャッシュするのがよい。
+
+	画像が存在すればtrue、しなければfalseを返す。
+
+
+	Dipsplays the image specified by foobar2000 core API.
+	After the image is resized, it is cached on the memory. 
+
+
+
+	target: 0  group first track's album art
+		1  current track's album art
+
+		   To use target=0 is strongly recommended.
+		   Please use target=1 carefully.
+
+	OPTIONS
+		■ <appearance>
+		nokeepaspect アスペクト比を維持しない(nodisplay,archive,icon以外のオプションと排他)。
+		nodisplay    メモリに読み込むだけで表示しない。
+		noexpansion  縮小はするが、拡大しない。
+
+		■ <align>	それぞれ排他。
+		left right   水平アライン指定。
+		top bottom   垂直アライン指定。
+
+
+		■ <read engine>	それぞれ排他。
+		front
+		back
+		disc
+		icon
+		artist 
+
+
+	n   rotateflipのためのインデックス
+		1: 90
+		2: 180
+		3: 270
+		4: 左右反転 
+		5: 90 + 左右反転 
+		6: 上下反転 
+		7: 90 + 上下反転 
+
+	alpha  0-255
+		不透明度
+
+	OPTIONS2 (shadow effect)
+		glow:expand:colour
+		offset:x:y
+
+
+    例  $albumart(10,10,50,50,0)
+        $albumart(10,10,50,50,0,left top)
+        $albumart(10,10,50,50,0,front,6)
+
+
+●描画補助
+
+$getlastpos(elem)
+	画像表示関数imageabs, imageabs_rcの直後で、実際に画像を描画した座標を取得する。
+	また、measurestringの結果を取得するときにも使う。
+	drawstringの場合は、mempos指定した場合のみ直後に座標を取得できる。
+
+   	elem  取得したい要素を指定する。
+		x :  left
+		y :  top
+		w :  width
+		h :  height
+		r :  right
+		b :  bottom
+
+	例:  
+		$setworldtransform(2)
+		$puts(img_path,C:\%album%.jpg)
+		$imageabs(10,4,100,100,$get(img_path),top noexpansion,)
+		$imageabs($getlastpos(x),$getlastpos(b),$getlastpos(w),20,$get(img_path),top nokeepaspect,6)
+		$gradientrect($getlastpos(x),$getlastpos(y),$getlastpos(w),$getlastpos(h),%el_backcolour%-128,%el_backcolour%-255)
+		$setworldtransform(0)
+
+
+$measurestring(text,x,y,W,H,OPTIONS)
+	$drawstringで文字列を描画した場合の表示領域を計算する。
+	また、結果として、表示領域の水平幅を返す。
+	表示領域の結果は$getlastposで取得する。
+	OPTIONSは$drawstringと同じ。
+	ただし、計算結果は、実際に描画結果よりも少し大きめの結果が返る。
+	(余白を含めた結果が返る。カーニングによって描画結果の方が小さくなる。)
+
+
+$getimagewidth(path), $getimageheight(path)
+	pathで指定される画像が$imageabs $imageabs_rcで メモリにキャッシュ中の
+	画像であれば、そのリサイズ済みの水平幅、垂直幅を返す。
+	つまり$imageabs $imageabs_rcの後ろでしか使用できない。
+	nokeepaspectを適用していなければアスペクト比を計算できるかもしれない。
+
+
+$setcoordinate(mode)
+$setcoordinate(0,X,Y,W,H)
+$setcoordinate(1,X,Y,R,B)
+	描画関数で引数に "(x,y,w,h)" 指定を持つものを、(x,y,right,bottom)指定に変える。
+	$imageabs_rcや$drawtriangleに対しては無効。
+	またX,Y,W,Hを指定すると、描画関数で座標指定を省略した場合のデフォルト描画位置を変更することができる。
+	$imageabs, $imageabs_rcや$drawtriangleに対しては無効。
+
+	mode : 座標の指定モード
+		0    default  (x,y,w,h)
+		1    (x,y,right,bottom)
+
+ (x,y)<------w------->
+    |----------------|
+    |                |
+  h |                |
+    |                |
+    |________________| 
+                    (right,bottom)
+
+
+$setworldtransform(mode)
+	座標系を変更する。
+	座標系を変えても別の行に描画できるわけではない。
+	Group全体や複数のトラックをまたいだ描画を行うときに便利なはず。
+	特に画像を表示する場合に有効。
+	Popupでは使用禁止。
+	(使用例は初期TFを参照。)
+
+	mode 
+		0:default
+			各トラックの原点(x,y)=(0,0)は、それぞれのトラックの左上。
+
+		1: group 共通座標系
+			Groupと各トラックの原点(x,y)=(0,0)をGroup行の左上とする。
+			%el_height% = (%el_item_count2% + %el_group_row%) * %el_row_height%になる。
+
+		2:item list共通座標系
+			各トラックの原点(x,y)=(0,0)を同グループの最初のトラック行の左上とする。
+			%el_height% = %el_item_count2% * %el_row_height%になる。
+
+default
+  (0,0)
+     |----------------|
+     |________________| 
+                    (el_width,el_height)
+
+group 共通座標系
+  (0,0)
+     |----------------|
+     |  group header  |
+     |----------------|
+     |----------------|
+     |----------------|
+     |----------------|
+     |________________|
+                    (el_width,el_height)
+
+item list共通座標系
+     |----------------|
+     |  group header  |
+(0,0)|----------------|
+     |----------------|
+     |----------------|
+     |----------------|
+     |________________|
+                    (el_width,el_height)
+
+
+$enabledraw(mode)
+	描画系関数($draw**** や$imageabs**)の描画を行うかどうかを制御する。
+	この関数が再び呼ばれるまでの描画をon/offする。
+	主にempty行での描画の制御に使う。
+
+	mode
+		0: 描画系関数無効
+		1: 有効
+
+	例: $enabledraw(1)
+	    $enabledraw(%el_is_valid%)
+
+
+$getsyscolour(index)
+	システムカラーをr-g-b形式で返す。
+
+	index:[0-30] システムカラーのインデックス
+
+
+$averagecolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色の平均する。
+	(colour1 + colour2 +･･･)/N
+
+
+$blendcolour(colour1,w1,colour2,w2,[,･･･])
+	r-g-b-a形式で重みつき平均を返す。
+	(w1*colur1 + w2*colour2 + ･･･ + wN * colourN)/ (w1 + w2 + ･･･ + wN)
+
+
+$addcolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色を加算する。
+	colour1 + colour2 + ･･･ + colourN
+
+
+$subcolour(colour1,colour2[,･･･])
+	r-g-b-a形式の色を減算する。
+	colour1 - colour2 - colour3 ･･･ - colourN
+
+
+$xorcolour(colour1,colour2[,･･･])
+	r-g-b形式の色のXOR演算を行う。alphaチャンネルだけcolour1の値を返す。
+	colour1  xor  colour2  xor  colour3 ･･･  xor  colourN
+
+
+
+●汎用系関数
+	基本的に[Track list] [Group header] [Per Second] [Group row] [Min item num] [Popup]で有効。
+
+$getgroupformat(group_index)
+	group_indexで指定されるグループでgroup formatをTFとして処理した結果を返す。
+	group_index : 指定するgroupが何番目か(0から数えて)。
+	%el_group_format% = $getgroupformat(%el_total_group_index%)の関係。
+
+
+$findfile(path,[path2,path3,...])
+	path(ワイルドカード可)で指定されるファイルが存在すれば、最初に見つかったファイルのパスを返す。
+	ファイルが存在しなければfalseを返す。
+	pathは複数指定可能。
+
+
+$el_scale(val,factor[,DIV])
+	val * factor/100 または val * factor / DIVを返す。
+	valとfactorが大きすぎるとオーバーフローします。
+
+
+
+●GDI系描画関数
+	GDIを使って描画する。シンプルな分、高速に処理される場合がある。
+
+
+$drawtext(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI文字列描画関数
+	textを座標(x,y)に出力
+
+	OPTIONS
+		left hcenter right       水平アライン指定
+		top  vcenter bottom      垂直アライン指定
+		noclip                   クリップしない
+
+
+$drawtextex(text,x,y,W,H,r-g-b,OPTIONS)
+	GDI文字列描画関数2
+	textを座標(x,y)に出力
+
+	OPTIONS
+		left hcenter right       水平アライン指定
+		top  vcenter bottom      垂直アライン指定
+		noclip                   クリップしない
+		wrap                     ラップアラウンド許可指定(vcenter、bottomとは排他)
+		end_ellipsis             テキストがクリップされる場合、テキストの最後を...に置き換える
+	
+	例: $drawtextex(text,0,0,%_width%,%_height%,0-0-0,hcenter vcenter end_ellipsis)
+
+
+$gettextwidth(text)
+$gettextwidth(text, FONTNAME, SIZE, OPTIONS)
+	GDI(drawtext,drawtextex)でtextを描画したときのテキストの水平幅を返す。
+	fontの指定も可(オプションは$font参照)。
+
+
+$gettextheight()
+$gettextheight(FONTNAME,SIZE,OPTIONS)
+	GDIで描画したときのテキストの垂直幅を返す。
+	fontの指定も可(オプションは$font参照)。
+
+
+$fillrect(x,y,w,h,r-g-b,RESERVED)
+	矩形塗りつぶし関数
+
+
+$fillroundrect(x,y,w,h,w2,h2,r1-g1-b1,r2-g2-b2)
+	角の丸い矩形塗りつぶし関数
+
+
+
+■■■Popup系関数■■■
+[Popup(Background)], [Popup(Track)]で有効。
+
+$popupsize(w,h)
+	ポップアップサイズを縮小する関数。
+	つまり、
+		w < max size(width)
+		h < max size(height)
+	を満たす必要がある。
+
+
+$popuphide()
+	ポップアップさせない。
+	一度でも呼び出すとその時点で、ポップアップしないことが確定する。
+
+
+$popuptracknum(num)
+	処理するトラックの最大数をnum個に減らす。
+	Popup(Background) のみ有効。
+
+
+
+[余談]: 関数の中で色を引数にとるところでは r-g-b-a形式以外にも $rgb(r,g,b)で指定したりできる(はず)。
+        またdrawtextのみ、引数のtext部分に、$rgb関数や$transition関数を使用して色の指定をすることが出来る(はず)。
+
+==============================================================================
+
+
+●免責事項など
+このソフトウェアを使用したことによって生じたすべての損害・障害・権利侵害・不具合等に関して、ソフトウェア作者は、一切の責任を負いません。
+たとえバグがあったとしても、修正の義務を負いません。
+この事項に了承頂ける方のみ、各自の責任においてご使用ください。
+
+
+･本ソフトウェアには、下記の使用条件とともに配布されているソフトウェアの一部が含まれています。
+foobar2000 0.9.5 SDK
+  Copyright (c) 2001-2008, Peter Pawlowski
+  All rights reserved.
+
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+  Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer. 
+  Neither the name of the author nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation or other materials provided with the distribution.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Columns UI SDK 6.3.1
+
+
+･ライセンスについて
+  Copyright (c) 2008, ssenna
+
+  バイナリ形式で再頒布する場合、頒布物に付属のドキュメント等の資料に、上記の著作権表示、本条件一覧、および下記免責条項を含めること。
+  書面による特別の許可なしに、本ソフトウェアから派生した製品の宣伝または販売促進に、著作権所有者または貢献者の名前を使用してはならない。
+
+  このソフトウェアは著作権所有者および貢献者により「現状のまま」提供されるものとし、商業的な使用可能性や特定の目的に対する適合性などの保証を含め、明示的暗黙的を問わず、いかなる保証もありません。
+  著作権所有者および貢献者は、事由の如何を問わず、損害発生の原因の如何を問わず、かつ責任の根拠が契約であるか厳格責任であるか（過失その他）不法行為であるかを問わず、仮にそのような損害が発生する可能性を知らされていたとしても、
+  このソフトウェアの使用から発生した直接損害、間接損害、偶発的な損害、特別損害、懲罰的損害、または結果損害（代替の物品やサービスの調達、使用機会やデータや利益の損失、業務の中断を含む、あらゆる損害）に対して一切責任を負いません。 
+
+
+
+==============================================================================
+
+
+
+change log
+v0.6.8.0b
+･%el_system_date%追加
+･$albumart追加
+･いくつかの動作の変更
+･$albumart でtarget=1 が上手く動作しない場合があるのを修正(v0.6.8.1b)
+･Playlist filterでwildcard を使えるようにした(v0.6.8.1b)
+･$albumart でtarget=1 で埋め込み画像が表示できないのを修正(v0.6.8.2b)
+
+v0.6.7.0b
+･埋め込み画像などが、表示できなくなっていたので修正したつもり。
+･$imageabsの、artreaer_***のときに、画像が見つからなかった場合、stub画像を読み込むようにした。
+
+
+v0.6.6.5b
+foobar2000 v1.0のalbum art API対応。
+
+
+v0.6.6b
+･ NowPlaying Playlistに追従するモードを追加。
+  ContextMenu->Playlists->Follow NowPlaying Playlist で設定。
+･ %el_foobar2000_path% %el_user_profile_path%を追加。
+･ プレイリストが切り替わった場合のスクロール位置の復元は、
+  前回表示したときの位置ではなく、単にフォーカスのあるトラック位置にスクロールするように仕様変更。
+･ クリックアクションから、動的なコンテキストメニューが選択できないのを修正。
+･ Follow NowPlaying Playlistの場合に、フォーカスに追従せずに再生トラックのみに追従するようにした。
+  また、Display only the focused groupがonの場合も再生トラックを含むグループを表示するようにした。
+  (v0.6.6.1b)
+･動的なコンテキストメニューで、GUIDが等しいコンテキストメニューがあると、上手く認識できないのを修正(v0.6.6.2b)
+･fontの設定処理まわりを修正(v0.6.6.2b)
+･前回の修正で、実行できない動的なコンテキストメニューができてしまったのを修正(v0.6.6.3b)
+･v0.6.6.2bから、$fontでの設定が効かなくなる場合があるのを修正(v0.6.6.4b)
+･トラックのフォーカスが移動したときに、表示範囲に入るようにスクロールするかどうか選択可能にした。
+ Behaviour-> Disable to follow the focused item(v0.6.6.4b)
+
+v0.6.5b
+･ActivePlaylistに追従するか否か、選択できるようにした。
+ ContextMenu->Playlists->Follow Active Playlist でon/off
+･細かい修正。
+･プレイリストを削除したときに、表示が狂うのを修正(v0.6.5.1b)
+･クラッシュすることがあるのを修正(v0.6.5.2b)
+･最新のSDKに更新(v0.6.5.2b)
+･終了時にスクロール位置を覚えるようにして、起動時にだいたいのスクール位置を復元するようにした。(v0.6.5.3b)
+･$imageabsで画像を別スレッドで読み込むようにした。(v0.6.5.3b)
+  nodelay optionで別スレッド読み込みはキャンセルできます。
+･$imageabsのartreader option向けに%el_group_first_path%追加。(v0.6.5.3b)
+･スクール位置の復元が上手くいかないケースがあるのを修正。(v0.6.5.3.1b)
+･delayのときwildcard無効になっていたのを修正。(v0.6.5.3.2b)
+･フォーカス関連の不具合修正。(v0.6.5.3.3b)
+･大きいプレイリストの処理速度を少し改善。(v0.6.5.4b)
+･キーボードショートカット処理の修正。(v0.6.5.5b)
+･キーボードショートカット処理の修正。(v0.6.5.5b)
+･リフレッシュコマンドをコンテキストメニューに追加。(v0.6.5.6b)
+･細かいバグ修正(v0.6.5.6b)
+
+v0.6.4b
+･click actionのSelect groupでグループを選択できるようにした。
+ (グループヘッダで%el_is_selected%が使えるようになった)
+･奇数･偶数行や、選択行などの背景色を指定できるようにした。
+･System colour mode-->enable Visual Styleに変更、および描画範囲指定追加、%el_is_themed%追加。
+･初期設定値の変更、enable Visual Styleを有効にしても変にならないように初期TFを更新。
+･Expand/Collapse all groupsで表示位置がずれてしまう問題の修正。(v0.6.4.1b)
+･初期TFの変更など、細かい調整。(v0.6.4.1b)
+･グループヘッダやempty行のクリックでフォーカスを移動させないオプションを追加。(v0.6.4.2b)
+･メニューの方のExpand/Collapse all groupsで表示位置がずれてしまう問題の修正。(v0.6.4.2b)
+
+v0.6.3b
+･VistaでSystem colour modeのときにリストの背景色を、エクスプローラのようなVisual Styleを適用するようにした。
+･$drawthemerectでエクスプローラのようなVisual Styleを描画できるようにした(Vistaのみ)。
+･マウスジェスチャで割り当てられるコマンドにSettingsを追加。
+
+
+v0.6.2b
+･foo_mouse_gestureと組み合わせてマウスジェスチャを機能を使えるようにした。
+･バグ修正など(v0.6.2.1b)
+･style presetの選択に関するバグ修正(v0.6.2.2b)
+･clickactionで実行できないコンテキストメニューがあったのを修正(v0.6.2.3b)
+･スクロールバーの表示など設定を変更してもすぐに反映されなくなっていたのを修正(v0.6.2.3b)
+･foo_mouse_gesture修正に対応 foo_mouse_gesture 0.2+ 必須(v0.6.2.4b)
+･ColumnsUI artwork viewのcurrent slection modeに対応(v0.6.2.4b)
+･v0.6.2.4からfoo_mouse_gestureがないと落ちる致命的なバグ修正(v0.6.2.5b)
+･設定ダイアログを整理した(v0.6.2.6b)
+･foo_mouse_gesture修正に対応 foo_mouse_gesture 0.3+ 必須(v0.6.2.7b)
+･グループの数が少なすぎる場合collpase all groups when playlist is changedを無効にできるようにした(v0.6.2.8b)
+･foo_mouse_gesture 0.4+対応(v0.6.2.8b)
+
+v0.6.1b
+･empty行にもclick actionを割り当てられるようにした。
+･5ボタンマウスの第4、第5ボタンにもclick actionを割り当てられるようにした。(5ボタンマウスがないので動作未確認)
+ v0.6.1.1b
+ ･row heightをgroup by presetで設定できるようにした。
+ ･インクリメンタル検索時にconsoleでなくステータスバーに状態を出力するように変更。
+ ･enable playlist filterがonの場合、コンテキストメニューからgroup by presetを選択しても、選択したものが
+  有効にならない場合があるのを修正。
+ v0.6.1.2b
+ ･$imageabsのwildcardをオプションに変更した。
+ ･行ごとの描画の更新で、更新が上の行から順次に描画されるように変更していたのを、全体が更新されてから描画するように戻した。
+
+v0.6.0b
+･最新のSDKに変更。(v0.9.5+必須？)
+･グループヘッダのドラッグをサポート。
+･パネル外とのDrag&Dropをサポート。
+･埋め込み画像の表示に(多分)対応。(ただし低速･･･)
+･sort formatの追加機能。
+･プレイリストにトラックがないときにドラッグで追加できないのを修正(v0.6.0.1b)
+･clickactionでmainmenuコマンドが有効にならないバグを修正(v0.6.0.2b)
+
+v0.5.2b
+･インクリメンタル検索機能追加。
+･$findfileで複数パス指定可能にした。
+･$imageabsでワイルドカード使用可能にした。
+･ショートカットキー追加。
+ v0.5.2.1b
+ $drawblurrectが$fillrectになっていたのを修正。
+
+v0.5.1b
+･グループヘッダでも一応ポップアップできるようにした。
+･マウス停止で実行できることを選べるようにした。
+･$fillroundrect, ポップアップ系のフィールド、関数追加。
+ v0.5.1.1b
+ ･設定ダイアログ整理。
+ ･選択状態が変更されても描画が更新されない場合があったのを修正。
+ ･初期TFを少し変更。
+
+v0.5.0b
+･ポップアップ機能追加。
+
+v0.4.5b
+･%el_is_hide_item%(--> %el_is_collapsed%に変更予定)をgroup rowでも使えるようにした。
+･gradientrectのオプションを追加。
+･playlist filterの検索順序の仕様を変更。
+･少し処理効率を上げたつもり。
+
+v0.4.4b
+･drawstringの仕様、特にglow系の仕様を変更。
+･TFの処理を少し軽くしたつもり。
+･描画TFも複数保存できるようにした。
+･drawstringでnoaaなどが効かなくなっていたのを修正(v0.4.4.1b)
+･設定ダイアログで reset すると 設定が壊れるバグを修正(v0.4.4.2b)
+･細かいバグ修正(v0.4.4.3b)
+
+v0.4.3b
+･グローバル変数代わりの置換機能を追加。あくまでTF処理前に置換するだけです。
+･初期TFを大幅に書き直した。
+･$imageabs, $imageabs_rcにglowオプションを追加
+･$drawblurrect関数追加
+
+v0.4.2b
+･細かいバグ修正
+･仕様の整理
+ レガシーな %_width% など "el" で始まらないフィールドを使えなくしました。
+
+v0.4.1b
+･設定変更直後に%el_preset_name%が不正になる場合があったのを修正。
+･設定変更直後にもplaylist filterを行うようにした。
+･$drawstringのオプションを追加。(最後を･･･に置き換えなど)
+･$measurestring追加。
+ v0.4.1.1b
+ ･トリッキーなグループ構造を指定されたときのレアケースにおきるバグ修正。
+ v0.4.1.2b
+ ･pseudo transparentのときの再描画制御を少し変更。
+
+
+v0.4.0b
+<機能追加>
+･group formatの設定などを複数持てるようにした。
+ また設定をコンテキストメニューから切り替えられるようにした。
+･コンテキストメニュー追加した。また各項目を非表示にできるようにした。
+<バグ修正>
+･プレイリスト切り替え時にスクロール位置を可能なら復元するようにした。
+･Toggle Selectionをmiddle clickに限定した。
+<仕様変更>
+･ダミートラック行の描画をデフォルトoffにした。つまり暗黙的に $enabledraw(%el_is_valid%) 状態ではじまる。
+  ダミートラック行で描画したい場合は $enabledraw(1) などで明示的にonにする必要がある。
+･ダミートラック行では、click actionが起動しないようにした。
+
+
+v0.3.3a
+･$getlastpos関数追加。
+･クリックアクションで選べる項目を増やした。mainmenuとcontextmenuを選べるようにした。
+ contextmenuの場合 グループに含まれるトラックが対象になります。
+･drawrectで枠を描画する場合の座標の仕様を変更した。
+ v0.3.3.1a
+ ･サブグループ化の際にダミーでいれるグループ行が不必要な場合にも入ってしまうのを修正。
+ ･ダミーでいれるグループ行で、%el_is_empty%が1を返すようにした。
+ v0.3.3.2a
+ ･アイテムを隠している場合、選択状態の表示の更新がされない場合があるのを修正
+ ･auto collapse時のグループ開閉の伴って表示位置がずれないように修正
+
+
+
+v0.3.2a
+･drawthemerect, drawfocusrect関数 追加
+･追加     %el_total_group_count%,%el_total_group_index%,
+ 仕様変更 %el_group_count%, %el_group_index%,
+ 削除     %el_subgroup_index%
+ v0.3.2.1a
+  ･ v0.3.1aからclear cacheが効かなくなっていたのを修正。
+  ･ サブグループがある場合にも アイテムを隠す動作に対応
+  ･ クリック時の動作や、フォーカスの移動の仕方を内部処理的に大幅に変更
+ v0.3.2.2a
+  ･ 無駄な再描画が行われていたのを修正。(少しは軽くなったかも)
+  ･ v0.3.2.1aでショートカットキーが上手く動作しなくなる場合があったのを修正。
+ 
+ v0.3.2.3a
+  ･ プレイリスト切り替えたときに表示する位置の仕様をとりあえずv0.3.2a以前と同じにした。
+ v0.3.2.4a
+  ･ v0.3.2.1aから単独のキー入力でリスト先頭に戻ってしまうのを修正。
+ v0.3.2.5a
+  ･ v0.3.2.1aからPageDown/PageUp/Home/Endが効かなくなっていたのを修正。
+  ･ Ctrl-aで全選択追加
+  ･ サブグループを持つグループのヘッダでclick actionのselect itemsしたときに
+    サブグループのアイテムを選択できないのを修正。
+  ･ 地味に最適化
+
+
+v0.3.1a
+･%el_subgroup_count2%、%el_subgroup_index% 追加
+･設定画面をタブ化
+･reset/import/export機能追加
+･サブループが存在する場合に%el_item_count%、%el_item_count2%がサブグループのトラック数を返すようにした。
+
+v0.3.0a
+･入れ子状っぽくgroup行を挿入する機能追加。(%el_group_depth%, %el_subgroup_count%追加)
+･glowの仕様変更。
+
+v0.2.9a
+･Drag & Dropによるアイテムの移動の機能追加。
+ v0.2.9.1a
+   + single click actionを追加 + imageabs系に書庫内画像を表示する機能追加(一般に書庫の展開は非常に低速です)。
+ v0.2.9.2a
+   + gettextwidth, gettextheightにfont指定追加
+   + imageabsのnoexpansionが機能していなかったバグを修正。
+   + imageabsにiconファイルの読み込みオプションを追加。
+ v0.2.9.3a
+   + drawtextとdrawtextexでも使えないfontがあったのを修正したつもり。
+   + スクロールバーを消したときに横矢印で水平スクロールしてしまう挙動を変更。
+   + drawstringに実験的にglowオプションを追加。
+   + glowのパラメータ調整(v0.2.9.3.1aとv0.2.9.3.2a)
+ v0.2.9.4a
+   + drawstringにオプションを追加。
+   + glowをほんの少し高速化(v0.2.9.4.1a)
+ v0.2.9.5a
+   + drawstringにフォントを高品質で描画するオプションを追加
+
+
+v0.2.8a
+･ダミー行の制御でTitleFormat使用可とした。
+･%el_backcolour%追加。
+ v0.2.8.1a
+   + ダミー行のバグ修正
+ v0.2.8.2a
+   + sortの仕様変更
+   + %el_group_format%, $getgroupformatを追加。
+
+
+v0.2.7a
+･フォーカスしたグループだけ表示するモード追加。
+ 他グループ間の移動は他のプレイリストでやってください。
+ (例えばGraphical Browserとか)
+ v0.2.7.1a
+ + pseudo transparentでの高さの制限をなくした。(XPだけかも)
+ + "hide header when there is only one group"を削除
+ + "hide all items when..."にauto-collapseオプションを追加。
+ v0.2.7.2a
+ + group rowで拡張フィールドの使用を可能にした。
+   "hide header when there is only one group" option の代わりは group row: $ifequal(%el_group_count%,1,0,3)
+   とかで対応してください。
+ v0.2.7.3a
+ + hideされたアイテムの選択状態の動作を変更。
+ + スクロールバーの表示/非表示、スクロール量 設定を追加
+ v0.2.7.4a
+ + スクロールバーが常に表示と非表示のときに、プレイリスト切り替えでのちらつきをできるだけ抑えるようにした。
+ + メインメニューコマンドを追加。
+ v0.2.7.5a
+ + display only the focused group で落ちる場合があったのを修正
+
+
+v0.2.6a
+･ショートカットキーの追加と削除。
+ Ctrl-c(Copy), Ctrl-v(Paste), Ctrl-x(Cut)追加。
+ メディアキー系の操作を削除
+･コンテキストメニューにPlaylistの選択を追加。
+･drawetextexで、&が扱えないバグを修正。
+･drawtriangle関数追加
+ v0.2.6.1a 
+ + imageabsに画像を透明度を指定する引数追加
+ + トラックのメタデータが変更されたときに、リストを初期化するのをやめた。
+ v0.2.6.2a
+ + imageabs_rcに画像を透明度を指定する引数追加
+ + %el_group_index%, %el_group_count%を追加。
+ + プレイリスト内のトラック数が少ないときの 擬似背景透過モードのときの挙動を少し改善。
+  **  pseudo trasnparaent mode currently requires that the height of ELPlaylist is integer multiples of row height **
+ v0.2.6.3a
+ + Per Trackがうまく働かない場合があったのを修正。
+
+v0.2.5a
+･group rowにtitleformat適用可能にした。0設定も可能。
+･Alt + 上下キーで、選択アイテムの移動をできるようにした。
+･pseudo transparent時のスクロールしたとき背景も一緒にスクロールしてしまう挙動を修正(したつもりだがどうでしょう？)
+･%[el]_is_hide% --> %[el]_is_hide_item%に変更。(しばらく%_is_hide%も使えます。)
+  v0.2.5.1a
+  + metadb_handle leakしてそうなところを修正。
+  + hide items which have no group headerが保存されないバグ修正
+
+
+v0.2.4a
+･クリックアクションをちょっとだけ追加。
+･指定item数に満たない場合、ダミー行を入れる機能追加。
+･グループが一つしかなかった場合にグループヘッダを表示しないオプションを追加。
+･実際の行の高さが、row height指定の値+1 になっていたのを修正。
+･Per Secondの負荷をかなり減らした。
++ デフォルトでitem listをhide状態にできるオプションを追加。
+  imageabsを使っている場合、少し注意が必要かも。
++ GDIテキスト系関数追加。
++ Groupのclick actionに先頭トラックの再生を追加。
++ TFフィールドを追加+GroupヘッダTFでも%el_isplaying%を使えるようにした。
+
+v0.2.3a
+･背景透過をGroupにまで拡張
+･矩形グラデーション関数追加
+･Per Second追加。
+ 初期TFも更新。
+ + パネルサイズを変更したときにGroupヘッダの背景透過がずれることがあったのを修正。
+ + 再生トラックが変わったときに描画がおかしくなるのを修正。
+ + 他のプレイリストと同期しない場合があったのに対応。
+ + すべてアイテムを選択状態から、一つに選択しなおした場合、
+   更新するまでにやたら時間がかかるのを修正したつもり。
+
+v0.2.2a
+･座標設定関数setworldtransform関数追加。
+ (画像を表示しやすくなると思う)
+･sortを有効にするかどうか選択できるようにした。
+･細かいバグ修正
+
+v0.2.1a
+･Applyボタンのバグ修正
+
+v0.2a
+･テキスト描画関数のアライン設定など追加。
+･背景色指定追加。
+･トラック行のみ擬似的な背景透過を可能にした。ただしWindowsXPのみ。
+ もしかしたらWindows2000だと起動しないのかも。
+･種々のバグ修正。
+
+v0.1a
+･公開版(+ title formatが書きかけだったのを追記)
+
+
+
+===========================================
+Appendix
+グループ構成の制約
+このような子グループを持つグループ(group1)がtrackを持つ構成はとれません。
+group1
+  |-group2
+  |   |-track1
+  |   |-track2
+  |
+  |-group3
+  |   |-track3
+  |   |-track4
+  |   |-track5
+  |
+  |-----track6
+  |-----track7
+
+この場合、上の構成は下のように変換されます。
+group1
+  |-group2
+  |   |-track1
+  |   |-track2
+  |
+  |-group3
+  |   |-track3
+  |   |-track4
+  |   |-track5
+  |
+  |-group4(dummy)
+  |   |-track6
+  |   |-track7
+
+

@@ -1,0 +1,137 @@
+foo_uie_library_tree.dll v0.3.4.4
+for foobar2000 v1.0+, Columns UI0.3+, WindowsXP+ 
+(動作確認はWindowsVistaのみ)
+
+SDK version
+foobar2000:2009-01-09
+       cui:6.3
+
+
+[機能]
+Media libraryや、Playlistをツリー表示するColumns UI用パネル。
+
+
+[設定]
+View format:
+	Library内のトラックをツリーにどうのように表示するか指定します。
+	"\" or "|" がノードのスプリッタになっています。
+	\は、\の直前のノードが昇順、|は|の直前のノードが降順にソートされることを意味します。
+
+
+	You can specify how to split nodes by using "\" and "|".
+	The previous nodes to "\" are sorted with ascending order.
+	The other side, the pevious nodes to "|" are sorted with decending order.
+	
+	AAA,BBB,CCCという名前のアルバムがあった場合、%album%としたときに、
+
+	(1) Album\%album%\...
+	Album
+	  |-AAA
+	  |-BBB
+	  |-CCC
+
+
+	(2)Album\%album%|...
+	Album
+	  |-CCC
+	  |-BBB
+	  |-AAA
+
+
+
+Filter:
+	filterで条件に合致するもののみ、表示します。
+	フォーマットは、foobar2000インストールフォルダにあるQuery Syntax Help.htmlを参照してください。
+
+
+	また、実験的拡張として、$nowplaying{}で、再生トラックのメタ情報を参照できます。
+ 	現在再生しているトラックに関連したトラックを抽出できます。
+	ただし、参照したメタ情報に特定の文字列( "AND" とか "(" ")"など)が含まれると上手くフィルタリングできない可能性があります。 
+	特に括弧は確実にダメ。
+	filterの例: 
+		%last_modified% DURING LAST 2 WEEKS
+		NOT (%title% HAS instrumental OR %title% HAS off vocal OR %title% HAS without vocal) AND %last_played% DURING LAST 1 WEEK
+		%artist% IS $nowplaying{%artist%}
+
+
+Sort tracks sended ... :
+	Playlistに転送するときに、このTFでsortしてから転送します。
+
+
+
+[Titleformat]
+View format でのみ、下記のTitleFormatが使用できます。
+また %<xxx>% もview formatでのみ使えます。
+
+
+<拡張fields>
+%relative_path%
+ Media Libraryで登録したフォルダからの相対パスを返す。
+
+
+<拡張functions>
+$nodisplay(str)
+ strは、ツリーのラベルに表示されない。ノードのソートには使用される。
+ str is not used for the label of the corresponding node.(but used for sorting of nodes)
+
+$is_ascii(str)
+ strがASCIIだけで構成されているなら true
+
+$is_alphabet(str)
+ strがアルファベットで構成されているなら true
+
+$is_numeric(str)
+ strが数字だけで構成されているなら true
+
+
+=============================================
+
+v0.3.4.0
+･ ツリーのノードのソート順序をView formatで指定できるようにした。
+･ 検索用のバーを追加した。
+･ コンボボックスに文字数制限があったのを修正。(v0.3.4.1)
+･ Edit Viewでソート順序を変更したときに、foobar2000を再起動しないと、ノードのソート順序が変わらない場合があったのを修正。(v0.3.4.2)
+･ 処理パフォーマンスの向上 (v0.3.4.3)
+･ まだDelete Viewで落ちる場合があるのを修正 (v0.3.4.4)
+
+
+v0.3.3.0b
+･foobar2000 v1.0対応(foobar2000 v1.0必須)。
+･細かいバグ修正。
+
+v0.3.2.7b
+･ほかのスレッドを邪魔する恐れがあるので、リソースをロックしている時間を最小化した。
+･v1.0からViewを編集したときに(主にDelete Viewで)落ちる場合があるのを修正。
+
+v0.3.2.6b
+･edge_style追加。
+･スクロールバーの非表示モードを追加。
+･%<xxx>%で、デフォルトのremapが効いていなかったのを修正。
+･プレイリストの順序を変更された場合などに、クラッシュする場合がある(らしい)のを修正したつもり。
+
+
+v0.3.2
+･処理のほとんどをバックグラウンドスレッドでやるようにした。
+･$nodisplayを追加(ノードのソート用)
+･Send New Playlistで作成されるプレイリストの名前を対応するノードのラベルにした。
+･Show sub-item countsを追加。
+･コンフィグを壊すバグを修正。(v0.3.2.1)
+･こぐ稀にクラッシュするのを修正。(v0.3.2.2)
+･こぐ稀にクラッシュするバグを修正したかも。(v0.3.2.3b)
+･パネルが閉じるときにクラッシュする場合があるのを多分修正。(v0.3.2.4b)
+･パネルが閉じるときにクラッシュする場合があるのを多分修正2。(v0.3.2.5b)
+
+v0.3
+･ActivePlaylistの表示機能を追加。
+･AutoPlaylistをPlaylistの木に表示できるようにした。
+･最新のSDKに更新(20081129)。(v0.3.1)
+･致命的なバグの修正。(v0.3.1)
+
+v0.2
+･ ライブラリが更新されたときに、Library Viewsの更新が上手くいかない場合があるのを修正。
+･ フィルタ機能追加。
+
+v0.1.1
+  タグの更新やトラックの追加によるライブラリの更新が行われたときのLibrary Viewsの更新をかなり軽くしたつもり。
+
+v0.1 公開版
