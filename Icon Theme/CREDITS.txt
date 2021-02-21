@@ -1,0 +1,4 @@
+author | papirus-icon-theme
+Source | https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+modded with colors from.
+https://www.nordtheme.com/docs/colors-and-palettes

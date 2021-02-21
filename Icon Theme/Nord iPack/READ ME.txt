@@ -1,0 +1,6 @@
+Remove the file extension ".remove" from the file before using.
+
+Note:
+***Do not use these iPacks on WIndows 10 builds higher than 1809.  For those builds 1903+ use the included 7TSP install package.
+
+CREDITS TO devillnside and Moonnique for the installer.
