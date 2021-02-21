@@ -4,6 +4,8 @@ Here you can find my latest setup, on Windows 10. Feel free to create an issue i
 NOTE: These dots are intended for my setup. If you wish to use them (and feel free to take them and tinker around), you will have to make specific modifications
 for your own machine. I'll do my best to answer questions related to parameters that may need to be changed
 
+Thanks to [Barbarossa93](https://github.com/Barbarossa93) and his [Genome](https://github.com/Barbarossa93/Genome) setup
+
 ## Info
 - OS: Windows10
 - Browser: Firefox with a few small modifications to [Minimal Functional Fox](https://github.com/mut-ex/minimal-functional-fox)
